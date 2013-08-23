@@ -140,9 +140,26 @@ class CRM
 	end
 
 	def display_attribute()
-		# puts "\e[H\e[2J"
-		# Database.contacts.each do |a|
-
+		puts "\e[H\e[2J"
+		puts "Options: \n[1] ID\n[2] first name\n[3] last name\n[4] email\n[5]note"
+		puts "\nWhich attribute would you like to review?"
+		attribute_id = gets.chomp.to_i
+		puts "\n"
+		Database.contacts.each do |a|
+			if  attribute_id == 1
+				puts a.id
+			elsif attribute_id == 2
+				puts a.first_name
+			elsif attribute_id == 3
+				puts a.first_name
+			elsif attribute_id == 4
+				puts a.email
+			elsif attribute_id == 5
+				puts a.note
+			else
+				"The attribute specified does not exist..."
+			end
+		end
 	end
 
 	def exit
