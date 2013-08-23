@@ -20,8 +20,10 @@ class Database
     @id
   end
 
-  def self.modify(modify_id)
-    
+  def self.modify_contact(contact, input_id)
+    @contacts = @contacts.push contact
+    contact.id = input_id
+    contacts.sort_by {|obj| obj.id}
   end 
 
 end

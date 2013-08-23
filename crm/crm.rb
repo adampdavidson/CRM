@@ -7,6 +7,10 @@ class CRM
 		@crm_name = crm_name
 	end
 
+	def is_a_number?(s)
+  		s.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? false : true 
+	end
+
 	def main_menu
 		while @@exit != true
 	  print_main_menu
@@ -35,6 +39,14 @@ class CRM
 	  exit if user_selected == 6
 	end
 
+	def display_selected_contact(a)
+		puts "\n"
+		puts "ID: " + a.id.to_s
+		puts "Name: " + a.first_name + " " + a.last_name
+		puts "Email: " + a.email
+		puts "Note: " + a.note
+	end
+
 	def add_new_contact()
 		puts "\e[H\e[2J"
 		puts "\nAdd a New Contact with ID #{Database.id} \n"
@@ -53,20 +65,84 @@ class CRM
   	end
 
 	def modify_existing_contact()
-		puts "Please enter a Contact ID (ex. 1004):  "
-		modify_id = gets.chomp.to_i
-		Database.modify(modify_id)
+		puts "\e[H\e[2J"
+		match = false
+		id_integer = false
+		puts "Enter the ID of the contact to modify: "
+		modify_id = gets.chomp
+		Database.contacts.each do |a|
+			if a.id == modify_id.to_i
+				match = true
+				display_selected_contact(a)
+				puts "Is this the contact you wish to modify? (Y/N)"
+				confirm_modify = gets.chomp.upcase
+				if confirm_modify == "Y"
+				 	while id_integer==false
+  							print "Enter new ID: "
+  							input_id = gets.chomp
+  							if is_a_number?(input_id) == true
+  							id_integer=true
+  							else
+  							print "\nInput is not a number. Make sure ID is an integer.\n"
+  							end
+  					end
+						print "Enter First Name: "
+						first_name = gets.chomp.downcase.capitalize
+						print "Enter Last Name: "
+						last_name = gets.chomp.downcase.capitalize
+						print "Enter Email Address: "
+						email = gets.chomp
+						print "Enter a Note: "
+						note = gets.chomp
+						contact = Contact.new(first_name, last_name, email, note)
+						Database.modify_contact(contact, input_id.to_i)
+						Database.contacts.delete(a)	
+					end
+			else 
+  			puts "\e[H\e[2J"
+  			puts "Contact was not modifed. Select another option\n\n" 
+			end
+			if match == false
+				puts "\nID #{a.id} not found, please choose another option."
+			end
+		end
+
+
 	end
 
 	def delete_contact()
+		puts "\e[H\e[2J"
+		print "Specify ID of contact you wish to delete: "
+		match = false
+		delete_id = gets.chomp
+		Database.contacts.each do |a|
+			if a.id == delete_id.to_i
+				match = true
+				display_selected_contact(a)
+				puts "\nWill be permanently deleted. Confirm? (Y/N)"
+				confirm_delete = gets.chomp.upcase
+					if confirm_delete == "Y"
+						Database.contacts.delete(a)
+						puts "#{a.first_name} #{a.last_name} successfully deleted!"
+					end
+			end
+			if match == false
+				puts "\nID #{a.id} not found, please choose another option."
+			end
+		end
 	end
 
 	def display_contacts()
 		puts "\e[H\e[2J"
-		puts Database.contacts.inspect
+		Database.contacts.each do |a|
+			display_selected_contact(a)
+		end
 	end
 
 	def display_attribute()
+		# puts "\e[H\e[2J"
+		# Database.contacts.each do |a|
+
 	end
 
 	def exit
